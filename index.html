@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Statistical Calculator</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 20px;
+    }
+    .container {
+        max-width: 500px;
+        margin: 0 auto;
+    }
+    input[type="text"], input[type="button"] {
+        padding: 10px;
+        margin: 5px 0;
+        width: 100%;
+        box-sizing: border-box;
+    }
+    input[type="button"] {
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        cursor: pointer;
+    }
+    input[type="button"]:hover {
+        background-color: #45a049;
+    }
+</style>
+</head>
+<body>
+
+<div class="container">
+    <input type="text" id="numbersInput" placeholder="Enter numbers separated by commas">
+    <input type="button" value="Calculate" onclick="calculateStatistics()">
+    <div id="results"></div>
+</div>
+
+<script>
+    function calculateStatistics() {
+        var numbersInput = document.getElementById('numbersInput').value;
+        var numbers = numbersInput.split(',').map(function(item) {
+            return parseFloat(item.trim());
+        }).filter(function(item) {
+            return !isNaN(item);
+        });
+
+        if (numbers.length === 0) {
+            alert("Please enter valid numbers separated by commas.");
+            return;
+        }
+
+        var mean = calculateMean(numbers);
+        var median = calculateMedian(numbers);
+        var stdDev = calculateStandardDeviation(numbers);
+        var interQuartileRange = calculateInterQuartileRange(numbers);
+
+        var resultsDiv = document.getElementById('results');
+        resultsDiv.innerHTML = `
+            <p>Mean: ${mean}</p>
+            <p>Median: ${median}</p>
+            <p>Standard Deviation: ${stdDev}</p>
+            <p>Interquartile Range: ${interQuartileRange}</p>
+        `;
+    }
+
+    function calculateMean(numbers) {
+        var sum = numbers.reduce(function(acc, val) {
+            return acc + val;
+        }, 0);
+        return sum / numbers.length;
+    }
+
+    function calculateMedian(numbers) {
+        var sortedNumbers = numbers.slice().sort(function(a, b) {
+            return a - b;
+        });
+        var middle = Math.floor(sortedNumbers.length / 2);
+        if (sortedNumbers.length % 2 === 0) {
+            return (sortedNumbers[middle - 1] + sortedNumbers[middle]) / 2;
+        } else {
+            return sortedNumbers[middle];
+        }
+    }
+
+    function calculateStandardDeviation(numbers) {
+        var mean = calculateMean(numbers);
+        var squareDiffs = numbers.map(function(value) {
+            var diff = value - mean;
+            return diff * diff;
+        });
+        var avgSquareDiff = calculateMean(squareDiffs);
+        return Math.sqrt(avgSquareDiff);
+    }
+
+    function calculateInterQuartileRange(numbers) {
+        var sortedNumbers = numbers.slice().sort(function(a, b) {
+            return a - b;
+        });
+        var lowerQuartileIndex = Math.floor(sortedNumbers.length * 0.25);
+        var upperQuartileIndex = Math.ceil(sortedNumbers.length * 0.75);
+        var lowerQuartile = sortedNumbers[lowerQuartileIndex];
+        var upperQuartile = sortedNumbers[upperQuartileIndex];
+        return upperQuartile - lowerQuartile;
+    }
+</script>
+
+</body>
+</html>
